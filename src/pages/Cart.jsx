@@ -1,11 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import {useCart} from '../context/CartContext'
+import { useAuth } from '../context/AuthContext';
 
 const Cart = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  const handleCheckout = () => {
+    if (!user) {
+      alert("Debes iniciar sesión para completar la compra");
+      navigate("/login");
+      return;
+    }
+    navigate("/checkout");
+  }
 
   return (
     <div className="nes-container with-title is-centered m-5">
@@ -37,7 +47,7 @@ const Cart = () => {
             <p className='nes-text is-warning text-lg font-bold'>
               Total: ${total}
             </p>
-            <button className='nes-btn is-primary mt-4' onClick={() => navigate("/checkout")}>
+            <button className='nes-btn is-primary mt-4' onClick={handleCheckout}>
               Finalizar compra
             </button>
             <button
