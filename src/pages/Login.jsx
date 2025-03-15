@@ -1,71 +1,114 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { loginUser, loginGoogle } from "../services/authService";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await loginUser(email, password);
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      setError(error.message);
+      setError("Correo o contraseña incorrectos");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const handleLoginGoogle = async () => {
+    setLoading(true);
     try {
       await loginGoogle();
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      setError(error.message);
+      setError("Error al iniciar sesión con Google");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className='flex flex-col items-center mt-10'>
-      <h2 className='text-2xl font-bold mb-4'>Iniciar sesión</h2>
-      {
-        error && <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4' role='alert'>
-          <p>{error}</p>
-        </div>
-      }
-      <form onSubmit={handleLogin} className='flex flex-col items-center mt-10'>
-        <input
-          type='email'
-          placeholder='Correo electrónico'
-          required
-          className='border-2 border-gray-500 p-2 m-2'
-          onChange={(e) => setEmail(e.target.value)}
-        />
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="nes-container is-dark with-title p-6 w-full max-w-md">
+        <h2 className="title text-center">🔑 Iniciar Sesión</h2>
 
-        <input
-          type='password'
-          placeholder='Contraseña'
-          required
-          className='border-2 border-gray-500 p-2 m-2'
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button
-          type='submit'
-          className='bg-blue-500 text-white p-2 rounded-md m-2'
-        >
-          Iniciar sesión
-        </button>
-        <button
-          className='bg-red-500 text-white p-2 rounded-md m-2'
-          onClick={handleLoginGoogle}
-        >
-          Iniciar sesión con Google
-        </button>
-      </form>
+        {/* Mensaje de error */}
+        {error && (
+          <div className="nes-container is-error text-center p-3 my-3">
+            <p>{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          {/* Campo de correo */}
+          <label className="nes-text">Correo electrónico</label>
+          <input
+            type="email"
+            className="nes-input text-black"
+            placeholder="Ingresa tu correo"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          {/* Campo de contraseña con botón para mostrar/ocultar */}
+          <label className="nes-text">Contraseña</label>
+          <div className="relative flex items-center">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="nes-input w-full text-black"
+              placeholder="Ingresa tu contraseña"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="nes-btn is-primary ml-2"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
+
+          {/* Botón de inicio de sesión */}
+          <button
+            type="submit"
+            className={`nes-btn is-success ${loading ? "is-disabled" : ""}`}
+            disabled={loading}
+          >
+            {loading ? "Cargando..." : "🔓 Iniciar Sesión"}
+          </button>
+
+          {/* Botón de inicio de sesión con Google */}
+          <button
+            type="button"
+            className={`nes-btn is-error ${loading ? "is-disabled" : ""}`}
+            onClick={handleLoginGoogle}
+            disabled={loading}
+          >
+            {loading ? "Cargando..." : "🔵 Iniciar sesión con Google"}
+          </button>
+
+          {/* Enlace para recuperar contraseña */}
+          {/* <p className="text-center mt-3">
+            ¿Olvidaste tu contraseña?{" "}
+            <a href="/forgot-password" className="nes-text is-primary">
+              Recuperarla aquí
+            </a>
+          </p> */}
+        </form>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
