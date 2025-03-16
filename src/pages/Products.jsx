@@ -9,7 +9,7 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedPrice, setSelectedPrice] = useState("all");
-  const { addToCart } = useCart(); // Usamos el contexto del carrito
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchData = async () => {
